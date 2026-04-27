@@ -3,7 +3,7 @@ name: Deployment pipeline
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   simple_deployment_pipeline:
@@ -23,3 +23,9 @@ jobs:
 
       - name: Check style
         run: npm run eslint
+        
+      - name: Run tests
+        run: npm test
+
+      - name: Build project
+        run: npm run build
