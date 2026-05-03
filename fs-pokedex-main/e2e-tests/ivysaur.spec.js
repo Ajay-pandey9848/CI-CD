@@ -1,3 +1,4 @@
+/* eslint-env node */
 const { test, expect } = require('@playwright/test')
 
 test('ivysaur page shows correct ability', async ({ page }) => {

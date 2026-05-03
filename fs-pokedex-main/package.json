@@ -7,7 +7,8 @@
     "start": "webpack-dev-server --open --mode development --port 8080",
     "start-prod": "node app.js",
     "test": "jest",
-    "eslint": "eslint './**/*.{js,jsx}'",
+    "eslint": "eslint . --ext .js,.jsx"
+,
     "test:e2e": "playwright test",
     "build": "webpack --mode production"
   },
