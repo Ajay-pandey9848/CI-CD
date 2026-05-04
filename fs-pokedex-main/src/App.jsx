@@ -4,7 +4,7 @@ import PokemonPage from './PokemonPage'
 
 const App = () => {
   const match = useMatch('/pokemon/:name')
-  // const pokemonName = match ? match.params.name : null // removed unused variable
+  // pokemonName removed because it was unused
 
   return (
     <Routes>
