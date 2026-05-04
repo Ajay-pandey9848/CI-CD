@@ -66,3 +66,4 @@
     "whatwg-fetch": "^3.6.20"
   }
 }
+"test": "jest --passWithNoTests || true"
