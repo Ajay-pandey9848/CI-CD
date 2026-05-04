@@ -1,30 +1,37 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 
-const formatName = (name) => name.replace('-', ' ').toUpperCase();
+const formatName = (name) => name.replace('-', ' ').toUpperCase()
 
-const PokenomPage = ({ pokemon, previous, next }) => {
-  if (!pokemon) return <div>No Pokémon data</div>;
+const PokemonPage = () => {
+  const { name } = useParams()
+  const [pokemon, setPokemon] = useState(null)
 
-  const primaryType = pokemon.types.find((type) => type.slot === 1);
-  const typeName = primaryType ? primaryType.type.name : 'normal';
+  useEffect(() => {
+    fetch(`https://pokeapi.co/api/v2/pokemon/${name}`)
+      .then(res => res.json())
+      .then(data => setPokemon(data))
+  }, [name])
+
+  if (!pokemon) return <div>Loading...</div>
+
+  const primaryType = pokemon.types.find((type) => type.slot === 1)
+  const typeName = primaryType ? primaryType.type.name : 'normal'
 
   const stats = [...pokemon.stats]
     .map((stat) => ({
       name: formatName(stat.stat.name),
       value: stat.base_stat,
     }))
-    .reverse();
+    .reverse()
 
-  const normalAbility = pokemon.abilities.find((ability) => !ability.is_hidden);
-  const hiddenAbility = pokemon.abilities.find((ability) => ability.is_hidden === true);
+  const normalAbility = pokemon.abilities.find((ability) => !ability.is_hidden)
+  const hiddenAbility = pokemon.abilities.find((ability) => ability.is_hidden === true)
 
   return (
     <div className={`pokemon-page pokemon-type-${typeName}`}>
       <div className="links">
-        {previous && <Link to={`/pokemon/${previous.name}`}>Previous</Link>}
         <Link to="/">Home</Link>
-        {next && <Link to={`/pokemon/${next.name}`}>Next</Link>}
       </div>
 
       <div
@@ -52,7 +59,7 @@ const PokenomPage = ({ pokemon, previous, next }) => {
         </ul>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PokenomPage;
+export default PokemonPage
