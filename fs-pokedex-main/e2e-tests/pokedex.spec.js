@@ -1,7 +1,8 @@
-/* eslint-env node */
-const { test, expect } = require('@playwright/test')
+// e2e-tests/pokedex.spec.js
+import { test, expect } from '@playwright/test';
 
-test('front page can be opened', async ({ page }) => {
-  await page.goto('http://localhost:8080')
-  await expect(page.getByText('Pokémon')).toBeVisible()
-})
+test('should load Pokémon details page', async ({ page }) => {
+  await page.goto('http://localhost:3000/pokemon/ivysaur');
+  await expect(page.locator('h1')).toHaveText('IVYSAUR');
+  await expect(page.locator('.pokemon-type-grass')).toBeVisible();
+});

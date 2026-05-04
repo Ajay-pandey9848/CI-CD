@@ -1,4 +1,5 @@
-/* eslint-env node */
+/* global require */
+
 
 const { test, expect } = require('@playwright/test');
 

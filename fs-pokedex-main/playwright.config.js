@@ -1,3 +1,4 @@
+/* global module, process */
 module.exports = {
   webServer: {
     command: 'npm start',
