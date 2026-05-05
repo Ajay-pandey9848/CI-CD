@@ -1,15 +1,17 @@
-/* eslint-env node */
-const express = require('express')
-const app = express()
+/* global require, module, process */
 
-// get the port from env variable
-const PORT = process.env.PORT || 5001
+const express = require('express');
+const path = require('path');
+const app = express();
 
-app.use(express.static('dist'))
+app.use(express.static('dist'));
 
-const start = async () => {
-  await app.listen(PORT)
-  console.log(`server started on port ${PORT}`)
-}
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
+});
 
-start()
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
