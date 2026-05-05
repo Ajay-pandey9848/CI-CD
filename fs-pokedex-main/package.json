@@ -4,13 +4,13 @@
   "description": "Full Stack Open",
   "main": "src/index.js",
   "scripts": {
-  "start": "node app.js",
-  "build": "webpack --mode production",
-  "test": "jest --passWithNoTests || true",
-  "eslint": "eslint . --ext .js,.jsx",
-  "test:e2e": "playwright test"
-},
-
+    "start": "node app.js",
+    "start-prod": "node app.js",
+    "test": "jest --passWithNoTests || true",
+    "eslint": "eslint . --ext .js,.jsx",
+    "test:e2e": "playwright test",
+    "build": "webpack --mode production"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/smartlyio/fullstackopen-cicd.git"
@@ -66,4 +66,3 @@
     "whatwg-fetch": "^3.6.20"
   }
 }
-"test": "jest --passWithNoTests || true"
