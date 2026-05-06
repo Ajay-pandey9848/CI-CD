@@ -1,36 +1,42 @@
+name: CI/CD Pipeline
+
 on:
   push:
-    branches:
-      - master
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  simple_deployment_pipeline:
+  test-and-build:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ./fs-pokedex-main
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Check style
-        run: npm run eslint
+      - name: Run Jest tests
+        run: npm test -- --coverage
 
-      - name: Run tests
-        run: npm test
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
 
-      - name: Build project
+      - name: Run Playwright E2E tests
+        run: npm run test:e2e
+
+      - name: Build React app
         run: npm run build
 
-      - name: Run end-to-end tests
-        run: npm run test:e2e
+      - name: Upload build artifact (optional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: build/
