@@ -1,11 +1,22 @@
-import React from 'react'
-import { Routes, Route, useMatch } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
+import { Routes, Route } from 'react-router-dom'
 import PokemonPage from './PokemonPage'
 
 const App = () => {
-  // eslint-disable-next-line no-unused-vars
-  const match = useMatch('/pokemon/:name')
-  // pokemonName removed because it was unused
+  const [pokemon, setPokemon] = useState([])
+  const [error, setError] = useState(false)
+
+  useEffect(() => {
+    axios
+      .get('https://pokeapi.co/api/v2/pokemon/?limit=50')
+      .then(res => setPokemon(res.data.results))
+      .catch(() => setError(true))
+  }, [])
+
+  if (error) {
+    return <div data-testid="error">Error fetching data</div>
+  }
 
   return (
     <Routes>

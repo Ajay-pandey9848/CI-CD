@@ -1,15 +1,15 @@
-const express = require('express');
-const path = require('path');
+const express = require('express')
+const path = require('path')
 
-const app = express();
+const app = express()
 
-app.use(express.static('dist'));
+app.use(express.static('dist'))
 
 app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
-});
+  res.sendFile(path.resolve(__dirname, 'dist', 'index.html'))
+})
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8080
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+  console.log(`Server running on port ${PORT}`)
+})
