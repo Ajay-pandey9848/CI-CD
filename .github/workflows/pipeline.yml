@@ -3,8 +3,9 @@ name: Simple Deployment Pipeline
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
+  workflow_dispatch:
 
 jobs:
   simple_deployment_pipeline:
