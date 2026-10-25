@@ -7,7 +7,7 @@ const app = express()
 app.use(express.static('dist'))
 
 app.get('/health', (req, res) => {
-  res.status(200).send('ok')
+  res.status(503).send('unhealthy')
 })
 
 app.get('/{*splat}', (req, res) => {
@@ -18,4 +18,3 @@ const PORT = process.env.PORT || 8080
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
-
