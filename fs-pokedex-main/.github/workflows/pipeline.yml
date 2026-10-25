@@ -1,14 +1,20 @@
+
 name: Simple Deployment Pipeline
 
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
+  workflow_dispatch:
 
 jobs:
   simple_deployment_pipeline:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./fs-pokedex-main
 
     steps:
       - name: Checkout code
@@ -30,3 +36,11 @@ jobs:
 
       - name: Build project
         run: npm run build
+
+      - name: Deploy to Render
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          curl --fail --show-error --silent --max-time 30 \
+            --request POST "$RENDER_DEPLOY_HOOK_URL"
