@@ -1,4 +1,5 @@
 
+
 const express = require('express')
 const path = require('path')
 
@@ -7,7 +8,7 @@ const app = express()
 app.use(express.static('dist'))
 
 app.get('/health', (req, res) => {
-  res.status(503).send('unhealthy')
+  res.status(200).send('ok')
 })
 
 app.get('/{*splat}', (req, res) => {
