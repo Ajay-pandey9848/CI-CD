@@ -4,7 +4,7 @@ import { Routes, Route } from 'react-router-dom'
 import PokemonPage from './PokemonPage'
 
 const App = () => {
-  const [, setPokemon] = useState([])
+  const [pokemon, setPokemon] = useState([])
   const [error, setError] = useState(false)
 
   useEffect(() => {
