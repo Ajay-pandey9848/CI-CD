@@ -46,3 +46,19 @@ jobs:
         run: |
           curl --fail --show-error --silent --max-time 30 \
             --request POST "$RENDER_DEPLOY_HOOK_URL"
+            
+  tag_release:
+    needs: [simple_deployment_pipeline]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.75.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
+
+
+            
