@@ -47,6 +47,7 @@ jobs:
           curl --fail --show-error --silent --max-time 30 \
             --request POST "$RENDER_DEPLOY_HOOK_URL"
             
+  
   tag_release:
     needs: [simple_deployment_pipeline]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -54,6 +55,9 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.75.0
         env:
