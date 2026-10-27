@@ -67,3 +67,16 @@ The test pull request was closed without merging, and the temporary branch was d
 - Discord success and failure notifications.
 - Automated deployment to Render.
 - Automated version tagging.
+
+## Periodic Health Check
+
+A GitHub Actions workflow (`health-check.yml`) monitors the deployed Render application.
+
+- **Schedule:** Every day at 06:00 UTC.
+- **Manual execution:** Supported through GitHub Actions.
+- **Health check:** Uses `curl` to verify the application's HTTP response.
+- **Success:** HTTP 200 confirms the application is responding.
+- **Failure detection:** Tested using an unreachable localhost address (`127.0.0.1:9999`).
+- **Recovery:** Restored the production URL and confirmed that Periodic Health Check #5 passed with HTTP 200.
+
+**Production URL:** https://ci-cd-new-5pgl.onrender.com
