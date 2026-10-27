@@ -1,4 +1,5 @@
 
+
 name: Simple Deployment Pipeline
 
 on:
@@ -39,9 +40,8 @@ jobs:
       - name: Build project
         run: npm run build
 
-     
-      
       - name: Deploy to Render
+        id: deploy
         if: >-
           ${{
             github.event_name == 'push' &&
@@ -53,9 +53,35 @@ jobs:
           curl --fail --show-error --silent --max-time 30 \
             --request POST "$RENDER_DEPLOY_HOOK_URL"
 
-            
-  
- 
+      # Discord notification on successful deployment trigger
+      - name: Discord Success Notification
+        if: ${{ success() && steps.deploy.outcome == 'success' }}
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "Deployment Successful"
+          description: |
+            A new version was triggered for deployment to Render!
+            Repository: ${{ github.repository }}
+            Commit: ${{ github.sha }}
+          color: 0x00ff00
+
+      # Discord notification when the pipeline fails
+      - name: Discord Failure Notification
+        if: ${{ failure() }}
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "Build Failed"
+          description: |
+            Build or deployment trigger failed!
+            Repository: ${{ github.repository }}
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+            Commit message: ${{ github.event.head_commit.message }}
+            Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          color: 0xff0000
+
   tag_release:
     needs: [simple_deployment_pipeline]
     if: >-
@@ -67,6 +93,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -76,6 +103,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
+
 
         
 
