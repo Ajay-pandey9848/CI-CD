@@ -1,5 +1,4 @@
 
-
 name: Simple Deployment Pipeline
 
 on:
@@ -12,7 +11,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  simple_deployment_pipeline:
+  build_and_test:
     runs-on: ubuntu-latest
 
     defaults:
@@ -40,22 +39,31 @@ jobs:
       - name: Build project
         run: npm run build
 
+  deploy:
+    needs: build_and_test
+    if: >-
+      ${{
+        github.event_name == 'push' &&
+        github.ref == 'refs/heads/master' &&
+        !contains(join(github.event.commits.*.message, ' '), '#skip')
+      }}
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Deploy to Render
-        id: deploy
-        if: >-
-          ${{
-            github.event_name == 'push' &&
-            !contains(join(github.event.commits.*.message, ' '), '#skip')
-          }}
         env:
           RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         run: |
           curl --fail --show-error --silent --max-time 30 \
             --request POST "$RENDER_DEPLOY_HOOK_URL"
 
-      # Discord notification on successful deployment trigger
+  notify_success:
+    needs: deploy
+    if: ${{ needs.deploy.result == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Discord Success Notification
-        if: ${{ success() && steps.deploy.outcome == 'success' }}
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
@@ -66,30 +74,9 @@ jobs:
             Commit: ${{ github.sha }}
           color: 0x00ff00
 
-      # Discord notification when the pipeline fails
-      - name: Discord Failure Notification
-        if: ${{ failure() }}
-        uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          title: "Build Failed"
-          description: |
-            Build or deployment trigger failed!
-            Repository: ${{ github.repository }}
-            Commit: ${{ github.sha }}
-            Author: ${{ github.actor }}
-            Commit message: ${{ github.event.head_commit.message }}
-            Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          color: 0xff0000
-
   tag_release:
-    needs: [simple_deployment_pipeline]
-    if: >-
-      ${{
-        github.event_name == 'push' &&
-        github.ref == 'refs/heads/master' &&
-        !contains(join(github.event.commits.*.message, ' '), '#skip')
-      }}
+    needs: deploy
+    if: ${{ needs.deploy.result == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -104,8 +91,28 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
 
+  notify_failure:
+    needs: [build_and_test, deploy]
+    if: >-
+      ${{
+        always() &&
+        (
+          needs.build_and_test.result == 'failure' ||
+          needs.deploy.result == 'failure'
+        )
+      }}
+    runs-on: ubuntu-latest
 
-        
-
-
-            
+    steps:
+      - name: Discord Failure Notification
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "Pipeline Failed"
+          description: |
+            Build, tests, or deployment trigger failed!
+            Repository: ${{ github.repository }}
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+            Workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          color: 0xff0000
