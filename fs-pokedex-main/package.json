@@ -9,7 +9,7 @@
     "test": "jest --passWithNoTests || true",
     "eslint": "eslint . --ext .js,.jsx",
     "test:e2e": "playwright test",
-    "build": "webpack --mode production"
+    "build": "exit 1"
   },
   "repository": {
     "type": "git",
