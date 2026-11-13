@@ -1,16 +1,24 @@
+
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Routes, Route } from 'react-router-dom'
 import PokemonPage from './PokemonPage'
+import PokemonList from './PokemonList'
 
 const App = () => {
-  const [, setPokemon] = useState([])
+  const [pokemonList, setPokemonList] = useState([])
   const [error, setError] = useState(false)
 
   useEffect(() => {
     axios
       .get('https://pokeapi.co/api/v2/pokemon/?limit=50')
-      .then(res => setPokemon(res.data.results))
+      .then(res => {
+        const pokemon = res.data.results.map(p => ({
+          name: p.name,
+          id: Number(p.url.split('/').filter(Boolean).pop())
+        }))
+        setPokemonList(pokemon)
+      })
       .catch(() => setError(true))
   }, [])
 
@@ -20,8 +28,14 @@ const App = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<div>Home page (list of Pokémon goes here)</div>} />
-      <Route path="/pokemon/:name" element={<PokemonPage />} />
+      <Route
+        path="/"
+        element={<PokemonList pokemonList={pokemonList} />}
+      />
+      <Route
+        path="/pokemon/:name"
+        element={<PokemonPage />}
+      />
     </Routes>
   )
 }
